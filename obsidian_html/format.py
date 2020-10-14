@@ -44,7 +44,7 @@ def obsidian_to_commonmark_links(document, matches, no_groups=2):
     for match in matches:
         text = match.group(no_groups)
         link = slug_case(match.group(1))
-        document = document.replace(match.group(), md_link(text, link))
+        document = document.replace(match.group(), md_link(text, link+".html"))
 
     return document
 
