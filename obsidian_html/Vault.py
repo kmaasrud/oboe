@@ -21,7 +21,7 @@ class Vault:
             if backlinks:
                 note["content"] += "\n<div class=\"backlinks\" markdown=\"1\">\n## Backlinks\n\n"
                 for backlink in backlinks:
-                    note["content"] += f"- {md_link(backlink['text'], backlink['link'])}\n"
+                    note["content"] += f"- {md_link(backlink['text'], backlink['link']+'.html')}\n"
                 note["content"] += "</div>"
 
     def convert_to_html(self):
