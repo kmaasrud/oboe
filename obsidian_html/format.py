@@ -23,7 +23,7 @@ def format_internal_header_links(document):
 
     for match in matches:
         text = match.group(2)
-        link = slug_case(match.group(1)) + "#" + slug_case(match.group(2))
+        link = slug_case(match.group(1)) + ".html#" + slug_case(match.group(2))
         document = document.replace(match.group(), md_link(text, link))
 
     return document
