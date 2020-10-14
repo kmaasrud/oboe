@@ -3,28 +3,32 @@ import markdown2
 from .utils import slug_case, md_link
 
 
-def format_internal_links(document):
+def format_internal_links(document, notes):
     """Formats Obsidian style links that are neither aliased, nor links to headers"""
     matches = re.finditer("\\[{2}([^|#]*?)\\]{2}", document)
 
-    return obsidian_to_commonmark_links(document, matches, no_groups=1)
+    return obsidian_to_commonmark_links(document, matches, notes, no_groups=1)
 
 
-def format_internal_aliased_links(document):
+def format_internal_aliased_links(document, notes):
     """Formats Obsidian style aliased links"""
     matches = re.finditer("\\[{2}([^|#\\]]*?)\\|(.*?)\\]{2}", document)
 
-    return obsidian_to_commonmark_links(document, matches)
+    return obsidian_to_commonmark_links(document, matches, notes)
 
 
-def format_internal_header_links(document):
+def format_internal_header_links(document, notes):
     """Formats Obsidian style header links"""
     matches = re.finditer("\\[{2}([^|#\\]]*?)#(.*?)\\]{2}", document)
 
     for match in matches:
         text = match.group(2)
         link = slug_case(match.group(1)) + ".html#" + slug_case(match.group(2))
-        document = document.replace(match.group(), md_link(text, link))
+        files = [note['filename'] for note in notes]
+        if match.group(1) in files:
+            document = document.replace(match.group(), md_link(text, link))
+        else:
+            document = document.replace(match.group(), text)
 
     return document
 
@@ -40,22 +44,26 @@ def format_tags(document):
     return document
 
 
-def obsidian_to_commonmark_links(document, matches, no_groups=2):
+def obsidian_to_commonmark_links(document, matches, notes, no_groups=2):
     for match in matches:
         text = match.group(no_groups)
         link = slug_case(match.group(1))
-        document = document.replace(match.group(), md_link(text, link+".html"))
+        files = [note['filename'] for note in notes]
+        if match.group(1) in files:
+            document = document.replace(match.group(), md_link(text, link+".html"))
+        else:
+            document = document.replace(match.group(), text)
 
     return document
 
 
-def htmlify(document):
+def htmlify(document, notes):
     # Formatting of Obsidian tags and links.
     document = format_tags(
         format_internal_header_links(
             format_internal_aliased_links(
                 format_internal_links(
-                    document))))
+                    document,notes), notes),notes))
 
     # Escaped curly braces lose their escapes when formatted. I'm suspecting
     # this is from markdown2, as I haven't found anyplace which could

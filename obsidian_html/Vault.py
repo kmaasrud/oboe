@@ -28,7 +28,7 @@ class Vault:
         notes_html = []
         for note in self.notes:
             filename_html = slug_case(note["filename"]) + ".html"
-            content_html = htmlify(note["content"])
+            content_html = htmlify(note["content"], self.notes)
 
             notes_html.append(
                 {"filename": filename_html, "content": content_html, "title": note["filename"]})
