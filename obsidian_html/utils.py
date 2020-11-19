@@ -9,7 +9,7 @@ def slug_case(text):
 
 
 def md_link(text, link):
-    return "[" + text + "](" + link + ")"
+    return "[" + text + "](" + link + ".html)"
 
 
 def extract_links_from_file(document):
