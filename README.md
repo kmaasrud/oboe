@@ -24,7 +24,7 @@ The script will only convert the files located directly in the directory specifi
 
 ### Templates
 
-The output is not very exiting from the get-go. It needs some style and structure. This is done by using a HTML template. A template must have the formatters `{title}` and `{content}` present. Their value should be obvious. The template file is supplied to `obsidian-html` by the `-t` flag, like this:
+The output is not very exiting from the get-go. It needs some style and structure. This is done by using a HTML template. A template must have the formatters `{title}` and `{content}` present. Their value should be obvious. The template should use the `{backlinks}` formatter for the links to notes that reference this note. The template file is supplied to `obsidian-html` by the `-t` flag, like this:
 
     obsidian-html <vault> -t template.html
 
