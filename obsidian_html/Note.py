@@ -74,6 +74,9 @@ class Note:
 
         # Wrapping converted markdown in a div for styling
         html = f"<div id=\"content\">{html}</div>"
+        if self.backlinks:
+            html += f"\n<foot class=\"backlinks\"><h2>Backlinks</h2>\n<nav>{self.backlinks}</nav></foot>" # self.backlinks is already wrapped in a div.
+
 
         return html
     
