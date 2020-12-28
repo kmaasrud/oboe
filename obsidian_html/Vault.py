@@ -6,13 +6,12 @@ from obsidian_html import GLOBAL
 
 
 class Vault:
-    def __init__(self, vault_root, extra_folders=[], html_template=None, filter=[], ):
+    def __init__(self, vault_root, extra_folders=[], html_template=None, filter=[]):
         self.vault_root = vault_root
         self.filter = filter
         self.notes = self._find_files(vault_root, extra_folders)
         self.extra_folders = extra_folders
         self._add_backlinks()
-        self.stylesheet_path = ""
 
         self.html_template = html_template
         if html_template:
@@ -43,7 +42,7 @@ class Vault:
                 os.makedirs(os.path.join(out_dir, folder))
         
         # Scan html template for stylesheet
-        scan_for_stylesheet(self.stylesheet_path, self.html_template, out_dir)
+        scan_for_stylesheet(self.html_template, out_dir)
 
         for note in self.notes:
             if self.html_template:

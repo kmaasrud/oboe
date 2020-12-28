@@ -73,7 +73,7 @@ def render_markdown(text):
 
     return markdown2.markdown(text, extras=markdown2_extras)
 
-def scan_for_stylesheet(stylesheet_path,template, out_dir):
+def scan_for_stylesheet(template, out_dir):
     # Find if any stylesheets are linked, and if they are local
     if GLOBAL.IGNORE_STYLESHEET == False: # Don't check if user specified ignore
         stylesheets = []
