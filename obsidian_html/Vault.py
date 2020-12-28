@@ -32,9 +32,9 @@ class Vault:
 
                 self.notes[i].backlinks = render_markdown(self.notes[i].backlinks)
 
-    def export_html(self, out_dir):
 
-        # Ensure out_dir exists, as well as its sub-folders. (must be done now to copy imgs(future) and stylesheet)
+    def export_html(self, out_dir):
+        # Ensure out_dir exists, as well as its sub-folders.
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
         for folder in self.extra_folders:

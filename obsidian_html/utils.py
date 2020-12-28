@@ -37,12 +37,14 @@ def find_backlinks(target_note_name, all_notes):
 
     return backlinks
 
+
 def find_tags(document):
     tags = [match.group(1) for match in re.finditer(r"\s#([\p{L}_-]+)", document)]
     # Sort by length (longest first) to fix issues pertaining to tags beginning with the same word.
     tags.sort(key=lambda x: len(x), reverse=True)
     
     return tags
+
 
 def render_markdown(text):
     # Escaped curly braces lose their escapes when formatted. I'm suspecting
@@ -73,6 +75,7 @@ def render_markdown(text):
 
     return markdown2.markdown(text, extras=markdown2_extras)
 
+
 def scan_for_stylesheet(template, out_dir):
     # Find if any stylesheets are linked, and if they are local
     if GLOBAL.IGNORE_STYLESHEET == False: # Don't check if user specified ignore
@@ -98,6 +101,7 @@ def scan_for_stylesheet(template, out_dir):
                 savestyle.write(style.read())   #write out file
                 style.close()
                 savestyle.close()
+
 
 def replace_stylesheet_html(html, out_dir, file_out_dir):
     # Replace stylesheet href with correct relative path
