@@ -1,14 +1,13 @@
 import os
 import regex as re
-from obsidian_html.utils import slug_case, md_link, render_markdown
+from obsidian_html.utils import slug_case, md_link, render_markdown, scan_for_stylesheet, replace_stylesheet_html
 from obsidian_html.Note import Note
 from obsidian_html import GLOBAL
 
 
 class Vault:
-    def __init__(self, vault_root, extra_folders=[], html_template=None, filter=[], out_dir=""):
+    def __init__(self, vault_root, extra_folders=[], html_template=None, filter=[], ):
         self.vault_root = vault_root
-        self.out_dir = out_dir
         self.filter = filter
         self.notes = self._find_files(vault_root, extra_folders)
         self.extra_folders = extra_folders
@@ -19,39 +18,6 @@ class Vault:
         if html_template:
             with open(html_template, "r", encoding="utf8") as f:
                 self.html_template = f.read()
-
-        # Ensure out_dir exists, as well as its sub-folders. (must be done now to copy imgs(future) and stylesheet)
-        if not os.path.exists(out_dir):
-            os.makedirs(out_dir)
-        for folder in self.extra_folders:
-            if not os.path.exists(os.path.join(out_dir, folder)):
-                os.makedirs(os.path.join(out_dir, folder))
-
-        # Find if any stylesheets are linked, and if they are local
-        if GLOBAL.IGNORE_STYLESHEET == False: # Don't check if user specified ignore
-            try:
-                self.stylesheet_path = re.search('<link+.*rel="stylesheet"+.*href="(.+?)"', self.html_template).group(1)
-            except AttributeError:
-                #Then <link, rel="stylesheet", href="" wasn't found.
-                GLOBAL.IGNORE_STYLESHEET = True
-                print("Attributeerror")
-
-            if not os.path.isfile(self.stylesheet_path):
-                #Then the file referred to in the href does not exist. May be online hosted, and should be ignored.
-                GLOBAL.IGNORE_STYLESHEET = True
-                print("FileNotFoundError")
-            else:
-                #So it exists, and is local. Let's copy it to the output dir.
-                #Probably a better copy method could have been used..
-                
-                style = open(self.stylesheet_path, "r") #open file
-                self.stylesheet_outpath = os.path.join(out_dir, os.path.basename(self.stylesheet_path)) #set out path
-                print("Copying " + self.stylesheet_path + " to: " + self.stylesheet_outpath)
-                savestyle = open(self.stylesheet_outpath, 'w') #open out file
-                savestyle.write(style.read())   #write out file
-                style.close()
-                savestyle.close()
-
 
 
     def _add_backlinks(self):
@@ -67,25 +33,28 @@ class Vault:
 
                 self.notes[i].backlinks = render_markdown(self.notes[i].backlinks)
 
-    def export_html(self):
+    def export_html(self, out_dir):
+
+        # Ensure out_dir exists, as well as its sub-folders. (must be done now to copy imgs(future) and stylesheet)
+        if not os.path.exists(out_dir):
+            os.makedirs(out_dir)
+        for folder in self.extra_folders:
+            if not os.path.exists(os.path.join(out_dir, folder)):
+                os.makedirs(os.path.join(out_dir, folder))
         
+        # Scan html template for stylesheet
+        scan_for_stylesheet(self.stylesheet_path, self.html_template, out_dir)
 
         for note in self.notes:
             if self.html_template:
                 html = self.html_template.format(title=note.title, content=note.html(), backlinks=note.backlinks)
-                
-                # Replace stylesheet href with correct relative path
-                if GLOBAL.IGNORE_STYLESHEET == False:
-                    relative_stylesheet_path = os.path.relpath(self.stylesheet_outpath, start = self.out_dir)
-                    #Scanning to find the match and replace with new file
-                    match = re.search('<link+.*rel="stylesheet"+.*href="(.+?)"', html)
-                    if match:
-                        replacement = re.sub(match.group(1), relative_stylesheet_path, match.group())
-                        html = re.sub(match.group(), replacement, html)
-                        
+                # Replace original stylesheet location with new relative location.
+                file_out_dir = "./" #This is the filepath of the individual html, not yet implemented
+                html = replace_stylesheet_html(html, out_dir, file_out_dir)
+                         
             else:
                 html = note.html()
-            with open(os.path.join(self.out_dir, note.filename_html), "w", encoding="utf8") as f:
+            with open(os.path.join(out_dir, note.filename_html), "w", encoding="utf8") as f:
                 f.write(html)
 
 
@@ -119,3 +88,5 @@ class Vault:
                 md_files.append(note)
 
         return md_files
+
+    

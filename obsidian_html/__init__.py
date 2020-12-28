@@ -44,5 +44,5 @@ def main():
 
     GLOBAL.HTML_LINK_EXTENSIONS = args.extensions
     GLOBAL.IGNORE_STYLESHEET = args.ignore_stylesheet
-    vault = Vault(args.Vault, extra_folders=args.dirs, html_template=args.template, filter=args.filter, out_dir=args.output_dir)
-    vault.export_html()
+    vault = Vault(args.Vault, extra_folders=args.dirs, html_template=args.template, filter=args.filter)
+    vault.export_html(args.output_dir)
