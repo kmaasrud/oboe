@@ -36,8 +36,13 @@ def main():
                         action="store_true",
                         help="Whether to include a '.html' extension on links. Useful for viewing locally.")
 
+    parser.add_argument("-i", "--ignore_stylesheet",
+                        action="store_true",
+                        help="Ignores any local stylesheet referenced in the html template")
+                        
     args = parser.parse_args()
 
     GLOBAL.HTML_LINK_EXTENSIONS = args.extensions
-    vault = Vault(args.Vault, extra_folders=args.dirs, html_template=args.template, filter=args.filter)
-    vault.export_html(args.output_dir)
+    GLOBAL.IGNORE_STYLESHEET = args.ignore_stylesheet
+    vault = Vault(args.Vault, extra_folders=args.dirs, html_template=args.template, filter=args.filter, out_dir=args.output_dir)
+    vault.export_html()

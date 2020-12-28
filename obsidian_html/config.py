@@ -1,2 +1,3 @@
 class GLOBAL:
     HTML_LINK_EXTENSIONS = False
+    IGNORE_STYLESHEET = False
