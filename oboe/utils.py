@@ -10,7 +10,7 @@ def slug_case(text):
     import unicodedata
     text = str(text)
     text = unicodedata.normalize('NFKC', text)
-    text = re.sub(r'[^\w\s-]', '', text.lower())
+    text = re.sub(r'[^/\w\s-]', '', text.lower())
     return re.sub(r'[-\s]+', '-', text).strip('-_')
 
 
